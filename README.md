@@ -3,6 +3,8 @@
 
 KeyGhost is a utility that securely stores and types your sensitive text like passwords, frequently used phrases, or code snippets. With customizable hotkeys, you can quickly insert text anywhere without using clipboard or manual typing.
 
+> **⚠️ IMPORTANT NOTICE:** This is an alpha version of KeyGhost that may contain bugs and stability issues. Use at your own risk and please report any issues you encounter to help improve the application.
+
 ![KeyGhost Screenshot](https://github.com/user-attachments/assets/914c12b8-2510-403f-b78f-d3173d9d0b54)
 
 ## Features
