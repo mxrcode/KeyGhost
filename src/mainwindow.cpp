@@ -278,40 +278,23 @@ void MainWindow::sendText(const QString &text)
         
         if (vkCode == 0xFF) {
             // Character can't be typed with a normal keystroke
-            // Try using Unicode input method (Alt+Numpad)
-            // This is a more complex approach for international characters
-            std::vector<INPUT> unicodeInputs;
+            // Use the KEYEVENTF_UNICODE flag for direct Unicode input
+            INPUT unicodeInput[2];
+            ZeroMemory(unicodeInput, sizeof(unicodeInput));
             
-            // Press Alt
-            ZeroMemory(&input, sizeof(INPUT));
-            input.type = INPUT_KEYBOARD;
-            input.ki.wVk = VK_MENU;  // Alt key
-            unicodeInputs.push_back(input);
+            // Key down event
+            unicodeInput[0].type = INPUT_KEYBOARD;
+            unicodeInput[0].ki.wVk = 0;
+            unicodeInput[0].ki.wScan = c.unicode();
+            unicodeInput[0].ki.dwFlags = KEYEVENTF_UNICODE;
             
-            // Type the Unicode value using numpad
-            QString unicodeString = QString::number(c.unicode());
-            for (QChar digit : unicodeString) {
-                ZeroMemory(&input, sizeof(INPUT));
-                input.type = INPUT_KEYBOARD;
-                
-                // Convert digit to numpad key
-                WORD numpadKey = VK_NUMPAD0 + digit.digitValue();
-                input.ki.wVk = numpadKey;
-                unicodeInputs.push_back(input);
-                
-                // Key up
-                input.ki.dwFlags = KEYEVENTF_KEYUP;
-                unicodeInputs.push_back(input);
-            }
+            // Key up event
+            unicodeInput[1].type = INPUT_KEYBOARD;
+            unicodeInput[1].ki.wVk = 0;
+            unicodeInput[1].ki.wScan = c.unicode();
+            unicodeInput[1].ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
             
-            // Release Alt
-            ZeroMemory(&input, sizeof(INPUT));
-            input.type = INPUT_KEYBOARD;
-            input.ki.wVk = VK_MENU;
-            input.ki.dwFlags = KEYEVENTF_KEYUP;
-            unicodeInputs.push_back(input);
-            
-            SendInput(unicodeInputs.size(), unicodeInputs.data(), sizeof(INPUT));
+            SendInput(2, unicodeInput, sizeof(INPUT));
         } else {
             // Normal character input sequence
             std::vector<INPUT> inputs;
